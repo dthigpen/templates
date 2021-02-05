@@ -1,0 +1,119 @@
+$pack:
+  pack.mcmeta: |-
+    {
+        "pack": {
+            "pack_format": 6,
+            "description": "$pack datapack"
+        }
+    }
+  docs:
+  data:
+    minecraft/tags/functions/load.json: |-
+      {"values":["#load:__init"]}
+    load:
+      functions/__init.mcfunction: |-
+        # If you are a user of this library, do not modify this function, or you risk
+        # causing compatibility issues with other data packs. If you have a good reason
+        # to *add* something, feel free to make an issue on the GitHub for this project:
+        # https://github.com/LanternMC/Load
+
+        # Add the common objective to be used for version resolution.
+        scoreboard objectives add load dummy
+
+        # Reset all scores on this objective to allow for version resolution on reload.
+        scoreboard players reset * load
+
+        # Call a nonexistent function to allow for this data pack to be extended later.
+        function load:__init2
+      tags/functions:
+        load.json: |-
+          {"values": [$namespace:load"]}
+        __init.json: |-
+          {
+              "values": [
+                  "load:__init",
+                  "#load:standard",
+                  "#load:load",
+                  "#load:post_load"
+              ]
+          }
+        post_load.json: |-
+          {"values": []}
+        standard.json: |-
+          {"values": []}
+    global/advancements:
+      root.json: |-
+        {
+            "display": {
+                "title": "David Thigpen",
+                "description": "",
+                "icon": {
+                    "item": "minecraft:player_head",
+                    "nbt": "{SkullOwner: \"davidthigs\"}"
+                },
+                "show_toast": false,
+                "announce_to_chat": false
+            },
+            "parent": "global:root",
+            "criteria": {
+                "trigger": {
+                    "trigger": "minecraft:tick"
+                }
+            }
+        }
+      dtcraft.json: |-
+        {
+            "display": {
+                "title": "David Thigpen",
+                "description": "",
+                "icon": {
+                    "item": "minecraft:player_head",
+                    "nbt": "{SkullOwner: \"davidthigs\"}"
+                },
+                "show_toast": false,
+                "announce_to_chat": false
+            },
+            "parent": "global:root",
+            "criteria": {
+                "trigger": {
+                    "trigger": "minecraft:tick"
+                }
+            }
+        }
+      dtcraft/$pack.json: |-
+        {
+            "display": {
+                "title": "$pack",
+                "description": "",
+                "icon": {
+                    "item": "minecraft:crafting_table"
+                },
+                "announce_to_chat": false,
+                "show_toast": false
+            },
+            "parent": "global:dtcraft",
+            "criteria": {
+                "trigger": {
+                    "trigger": "minecraft:tick"
+                }
+            }
+        }
+    
+
+
+    $namespace:
+      internal:
+      test:
+      functions:
+        tick.mcfunction: "schedule function $namespace:tick 1t replace"
+        load.mcfunction: |-
+          tellraw @p {"text":"$pack datapack loaded","color":"green"}
+          scoreboard players set $$namespace.major load 0
+          scoreboard players set $$namespace.minor load 1
+          scoreboard players set $$namespace.patch load 0
+          
+          schedule clear $namespace:tick
+          schedule function $namespace:tick 1t replace
+
+      
+  
