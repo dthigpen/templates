@@ -45,16 +45,15 @@ $pack:
       root.json: |-
         {
             "display": {
-                "title": "David Thigpen",
+                "title": "Installed Datapacks",
                 "description": "",
                 "icon": {
-                    "item": "minecraft:player_head",
-                    "nbt": "{SkullOwner: \"davidthigs\"}"
+                    "item": "minecraft:knowledge_book"
                 },
+                "background": "minecraft:textures/block/gray_concrete.png",
                 "show_toast": false,
                 "announce_to_chat": false
             },
-            "parent": "global:root",
             "criteria": {
                 "trigger": {
                     "trigger": "minecraft:tick"
