@@ -60,14 +60,14 @@ $pack:
                 }
             }
         }
-      dtcraft.json: |-
+      $owner_ns.json: |-
         {
             "display": {
-                "title": "David Thigpen",
+                "title": "$owner_title",
                 "description": "",
                 "icon": {
                     "item": "minecraft:player_head",
-                    "nbt": "{SkullOwner: \"davidthigs\"}"
+                    "nbt": "{SkullOwner: \"$owner\"}"
                 },
                 "show_toast": false,
                 "announce_to_chat": false
@@ -79,7 +79,7 @@ $pack:
                 }
             }
         }
-      dtcraft/$pack.json: |-
+      $owner_ns/$pack.json: |-
         {
             "display": {
                 "title": "$pack",
@@ -90,7 +90,7 @@ $pack:
                 "announce_to_chat": false,
                 "show_toast": false
             },
-            "parent": "global:dtcraft",
+            "parent": "global:$owner_ns",
             "criteria": {
                 "trigger": {
                     "trigger": "minecraft:tick"
