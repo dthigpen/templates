@@ -1,118 +1,124 @@
-$pack:
+$pack_name:
   pack.mcmeta: |-
     {
         "pack": {
-            "pack_format": 6,
-            "description": "$pack datapack"
+            "pack_format": 7,
+            "description": "$description"
         }
     }
-  docs:
   data:
-    minecraft/tags/functions/load.json: |-
-      {"values":["#load:__init"]}
-    load:
-      functions/__init.mcfunction: |-
-        # If you are a user of this library, do not modify this function, or you risk
-        # causing compatibility issues with other data packs. If you have a good reason
-        # to *add* something, feel free to make an issue on the GitHub for this project:
-        # https://github.com/LanternMC/Load
-
-        # Add the common objective to be used for version resolution.
-        scoreboard objectives add load dummy
-
-        # Reset all scores on this objective to allow for version resolution on reload.
-        scoreboard players reset * load
-
-        # Call a nonexistent function to allow for this data pack to be extended later.
-        function load:__init2
-      tags/functions:
-        load.json: |-
-          {"values": [$namespace:load"]}
-        __init.json: |-
+    global:
+      advancements:
+        $owner_namespace.json: |-
           {
-              "values": [
-                  "load:__init",
-                  "#load:standard",
-                  "#load:load",
-                  "#load:post_load"
-              ]
+              "display": {
+                  "title": "$owner_title",
+                  "description": "",
+                  "icon": {
+                      "item": "minecraft:player_head",
+                      "nbt": "{SkullOwner: '$owner_username'}"
+                  },
+                  "show_toast": false,
+                  "announce_to_chat": false
+              },
+              "parent": "global:root",
+              "criteria": {
+                  "trigger": {
+                      "trigger": "minecraft:tick"
+                  }
+              }
           }
-        post_load.json: |-
-          {"values": []}
-        standard.json: |-
-          {"values": []}
-    global/advancements:
-      root.json: |-
-        {
-            "display": {
-                "title": "Installed Datapacks",
-                "description": "",
-                "icon": {
-                    "item": "minecraft:knowledge_book"
-                },
-                "background": "minecraft:textures/block/gray_concrete.png",
-                "show_toast": false,
-                "announce_to_chat": false
-            },
-            "criteria": {
-                "trigger": {
-                    "trigger": "minecraft:tick"
-                }
-            }
-        }
-      $owner_ns.json: |-
-        {
-            "display": {
-                "title": "$owner_title",
-                "description": "",
-                "icon": {
-                    "item": "minecraft:player_head",
-                    "nbt": "{SkullOwner: \"$owner\"}"
-                },
-                "show_toast": false,
-                "announce_to_chat": false
-            },
-            "parent": "global:root",
-            "criteria": {
-                "trigger": {
-                    "trigger": "minecraft:tick"
-                }
-            }
-        }
-      $owner_ns/$pack.json: |-
-        {
-            "display": {
-                "title": "$pack",
-                "description": "",
-                "icon": {
-                    "item": "minecraft:crafting_table"
-                },
-                "announce_to_chat": false,
-                "show_toast": false
-            },
-            "parent": "global:$owner_ns",
-            "criteria": {
-                "trigger": {
-                    "trigger": "minecraft:tick"
-                }
-            }
-        }
-    
 
+        $owner_namespace:
+          pack.json: |-
+            {
+                "display": {
+                    "title": "$pack_name",
+                    "description": "$description",
+                    "icon": {
+                        "item": "minecraft:command_block"
+                    },
+                    "announce_to_chat": false,
+                    "show_toast": false
+                },
+                "parent": "global:$owner_namespace",
+                "criteria": {
+                    "trigger": {
+                        "trigger": "minecraft:tick"
+                    }
+                }
+            }
 
-    $namespace:
-      internal:
-      test:
+        root.json: |-
+          {
+              "display": {
+                  "title": "Installed Datapacks",
+                  "description": "",
+                  "icon": {
+                      "item": "minecraft:knowledge_book"
+                  },
+                  "background": "minecraft:textures/block/gray_concrete.png",
+                  "show_toast": false,
+                  "announce_to_chat": false
+              },
+              "criteria": {
+                  "trigger": {
+                      "trigger": "minecraft:tick"
+                  }
+              }
+          }
+
+    load:
       functions:
-        tick.mcfunction: "schedule function $namespace:tick 1t replace"
+        _private:
+          init.mcfunction: |-
+            # Reset scoreboards so packs can set values accurate for current load.
+            scoreboard objectives add load.status dummy
+            scoreboard players reset * load.status
+
+      tags:
+        functions:
+          _private:
+            init.json: |-
+              {
+                  "values": [
+                      "load:_private/init"
+                  ]
+              }
+
+            load.json: |-
+              {
+                  "values": [
+                      "#load:_private/init",
+                      {"id": "#load:pre_load", "required": false},
+                      {"id": "#load:load", "required": false},
+                      {"id": "#load:post_load", "required": false}
+                  ]
+              }
+
+          load.json: |-
+            {"values": ["$namespace:load"]}
+
+    minecraft:
+      tags:
+        functions:
+          load.json: |-
+            {"values":["#load:_private/load"]}
+    $namespace:
+      functions:
         load.mcfunction: |-
-          tellraw @p {"text":"$pack datapack loaded","color":"green"}
-          scoreboard players set $$namespace.major load 0
-          scoreboard players set $$namespace.minor load 1
-          scoreboard players set $$namespace.patch load 0
+          #say load $pack_name
+          
+          scoreboard players set $$namespace.version.major load.status 0
+          scoreboard players set $$namespace.version.minor load.status 0
+          scoreboard players set $$namespace.version.patch load.status 0
+          
           
           schedule clear $namespace:tick
           schedule function $namespace:tick 1t replace
-
-      
-  
+        uninstall.mcfunction: |-
+          #say Uninstalling $pack_name
+        tick.mcfunction: |-
+          #say tick $pack_name
+          
+          schedule function $namespace:tick 1t replace
