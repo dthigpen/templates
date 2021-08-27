@@ -30,7 +30,7 @@ $pack_name:
           }
 
         $owner_namespace:
-          pack.json: |-
+          $pack_name.json: |-
             {
                 "display": {
                     "title": "$pack_name",
